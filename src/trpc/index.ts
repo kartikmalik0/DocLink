@@ -9,7 +9,7 @@ export const appRouter = router({
     const {getUser} = getKindeServerSession()
     const user = await getUser()
     
-    if(!user?.id || !user?.email) 
+    if(!user?.id || !user.email) 
       throw new TRPCError({code:"UNAUTHORIZED"})
   
     const dbUser = await prisma.user.findFirst({
@@ -41,6 +41,22 @@ export const appRouter = router({
 
   }),
 
+  getFile: privateProcedure.input(z.object({ key:z.string()})).mutation( async ({ctx,input})=>{
+    const {userId} = ctx
+
+    const file = await prisma.file.findFirst({
+      where:{
+        key:input.key,
+        userId,
+      },
+    })
+
+    if(!file) throw new TRPCError({code:"NOT_FOUND"})
+
+    return file
+
+  }) ,
+
   deleteFile: privateProcedure.input(
     z.object({id:z.string() })
   ).mutation( async  ({ctx,input})=>{
@@ -61,7 +77,8 @@ export const appRouter = router({
         }
       })
       return file
-  })
+  }),
+
 });
 
 
