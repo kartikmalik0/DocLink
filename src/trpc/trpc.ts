@@ -16,7 +16,7 @@ const isAuth = middleware(async (opts)=>{
         throw new TRPCError({code:'UNAUTHORIZED'})
     }
     return opts.next({
-        ctx:{
+        ctx:{ // ctx stands for context
             userId:user.id,
             user,
         }
